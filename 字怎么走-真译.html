@@ -128,6 +128,80 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ──────────────────────────────────────────────────────────────
+     字在走：沿各自书写方向的「墨迹揭示」
+     原则：文字整体先正确成形（保持 shaping / 连笔），只移动一道
+     mask 把它从无到有揭示出来——绝不按字母切，故阿拉伯/希伯来
+     连笔不破。七块共用 --dur，同启同收（JS 同时加 .writing 类）。
+     ────────────────────────────────────────────────────────────── */
+  .original { --dur: 2.2s; }
+
+  /* LTR：从左缘起，向右铺展（希腊 / 拉丁 / 天城体）*/
+  .original.writing.dir-ltr {
+    -webkit-mask-image: linear-gradient(to right, #000 44%, rgba(0,0,0,0) 72%);
+            mask-image: linear-gradient(to right, #000 44%, rgba(0,0,0,0) 72%);
+    -webkit-mask-size: 250% 100%; mask-size: 250% 100%;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-animation: writeLTR var(--dur) ease-out both;
+            animation: writeLTR var(--dur) ease-out both;
+  }
+  @keyframes writeLTR {
+    from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+    to   { -webkit-mask-position: 0 0;    mask-position: 0 0; }
+  }
+
+  /* RTL：从右缘起笔，向左淌（阿拉伯 / 希伯来）*/
+  .original.writing.dir-rtl {
+    -webkit-mask-image: linear-gradient(to left, #000 44%, rgba(0,0,0,0) 72%);
+            mask-image: linear-gradient(to left, #000 44%, rgba(0,0,0,0) 72%);
+    -webkit-mask-size: 250% 100%; mask-size: 250% 100%;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-animation: writeRTL var(--dur) ease-out both;
+            animation: writeRTL var(--dur) ease-out both;
+  }
+  @keyframes writeRTL {
+    from { -webkit-mask-position: 0 0;    mask-position: 0 0; }
+    to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  }
+
+  /* 竖排：从上往下落（中文 / 日文，vertical-rl）*/
+  .original.writing.dir-vertical {
+    -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0,0,0,0) 70%);
+            mask-image: linear-gradient(to bottom, #000 40%, rgba(0,0,0,0) 70%);
+    -webkit-mask-size: 100% 250%; mask-size: 100% 250%;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-animation: writeVERT var(--dur) ease-out both;
+            animation: writeVERT var(--dur) ease-out both;
+  }
+  @keyframes writeVERT {
+    from { -webkit-mask-position: 0 100%; mask-position: 0 100%; }
+    to   { -webkit-mask-position: 0 0;    mask-position: 0 0; }
+  }
+
+  /* --- 控制条：常驻「重走」键 --- */
+  .controls {
+    text-align: center; margin: 0 0 22px;
+  }
+  .replay-btn {
+    font-family: inherit; font-size: 13px; letter-spacing: .12em;
+    color: var(--accent); background: rgba(255,252,243,.6);
+    border: 1px solid var(--rule); border-radius: 2px;
+    padding: 6px 18px; cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .replay-btn:hover { background: var(--accent); color: var(--paper); }
+  .replay-btn:active { transform: translateY(1px); }
+
+  /* 尊重系统「减少动态效果」：直接给完整静态版，不揭示 */
+  @media (prefers-reduced-motion: reduce) {
+    .original.writing.dir-ltr,
+    .original.writing.dir-rtl,
+    .original.writing.dir-vertical {
+      -webkit-mask-image: none; mask-image: none;
+      -webkit-animation: none; animation: none;
+    }
+  }
+
   /* --- 全局说明 --- */
   .global-note {
     margin-top: 24px;
@@ -140,6 +214,10 @@
 <div class="scroll">
   <h1>字&thinsp;怎&thinsp;么&thinsp;走&ensp;·&ensp;真&thinsp;译</h1>
   <p class="subtitle">每一块是那门文字里最有名的一句话，<br>用它的原文真身，走它母语的方向。</p>
+
+  <div class="controls">
+    <button class="replay-btn" id="replay" type="button">↻ 重&thinsp;走</button>
+  </div>
 
   <div class="blocks" id="blocks"></div>
 
@@ -280,14 +358,37 @@ function render() {
   root.innerHTML = "";
   const live = ENTRIES.filter(e => e.status === "已核准");
 
-  live.forEach((e, i) => {
+  // 七块同启：容器一齐淡入（不再错峰），紧接着各块沿自己方向「走」。
+  live.forEach((e) => {
     const block = renderEntry(e);
     root.appendChild(block);
-    block.style.animation = `fadein 0.5s ease ${i * 110}ms both`;
+    block.style.animation = `fadein 0.45s ease both`;
+  });
+}
+
+/* ── 让七块同时「走」：给每块 .original 加 .writing 重启揭示动画 ──
+   只动 mask（先成形、后揭示），不碰文字本身，故连笔/shaping 不破。 */
+function playAll() {
+  const origs = document.querySelectorAll(".original");
+  origs.forEach(o => {
+    o.classList.remove("writing");
+    void o.offsetWidth;        // 强制 reflow，使动画可重启
+    o.classList.add("writing");
   });
 }
 
 render();
+
+const replayBtn = document.getElementById("replay");
+if (replayBtn) replayBtn.addEventListener("click", playAll);
+
+const reduceMotion = window.matchMedia &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (!reduceMotion) {
+  // 进页面自动走一遍——直接回应「没有字在走的感觉」。
+  requestAnimationFrame(() => requestAnimationFrame(playAll));
+}
 </script>
 </body>
 </html>
