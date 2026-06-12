@@ -85,9 +85,19 @@
   .pending{border:1px dashed var(--line);background:rgba(255,255,255,.28);border-radius:4px;
     padding:14px 16px;color:var(--muted);font-size:13.5px;line-height:1.7}
   .pending strong{color:var(--ink)}
-  /* ex1 embed */
-  .xuanji-frame{width:100%;height:min(880px,82vh);border:1px solid var(--line);
-    border-radius:4px;background:#f6f0e3}
+  /* ex1 integrated preview */
+  .xuanji-preview{display:grid;grid-template-columns:minmax(260px,.95fr) minmax(260px,1fr);
+    gap:16px;align-items:start}
+  .xuanji-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;
+    background:rgba(45,39,32,.14);border:1px solid var(--line);padding:6px;
+    max-width:420px}
+  .xuanji-grid span{display:flex;align-items:center;justify-content:center;
+    aspect-ratio:1;background:rgba(255,255,255,.55);font-size:14px;line-height:1;color:var(--muted)}
+  .xuanji-grid span.path{background:rgba(181,68,53,.16);color:var(--red);font-weight:650}
+  .xuanji-route{border:1px solid var(--line);background:rgba(255,255,255,.5);
+    border-radius:4px;padding:13px 15px;color:var(--muted);font-size:14px}
+  .xuanji-route b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}
+  .xuanji-route .line{color:var(--red);font-size:20px;letter-spacing:.12em;margin:8px 0}
   .three-layer{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 12px}
   .three-layer .layer{border:1px solid var(--line);background:rgba(255,255,255,.4);
     border-radius:4px;padding:9px 11px;font-size:13px;color:var(--muted)}
@@ -193,7 +203,7 @@
     .wing-line{font-size:14px}
     .literal-table{grid-template-columns:1fr}
     .literal-table .head{display:none}
-    .three-layer,.gist,.poem-meaning{grid-template-columns:1fr}
+    .three-layer,.gist,.poem-meaning,.xuanji-preview{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -232,20 +242,35 @@
     </div>
 
     <div class="three-layer" aria-label="三层导览">
-      <div class="layer"><b><span class="lang-zh">原始字阵</span><span class="lang-en">The Grid</span></b><span class="lang-zh">29×29 字，一字不动。下面嵌入的就是展品本体。</span><span class="lang-en">29×29 characters, none moved. The reader embedded below is the work itself.</span></div>
-      <div class="layer"><b><span class="lang-zh">读法路径</span><span class="lang-en">The Routes</span></b><span class="lang-zh">选一条《镜花缘》明列读法，看诗句一格格浮现。</span><span class="lang-en">Pick a route listed in Jinghua Yuan and watch a poem surface cell by cell.</span></div>
+      <div class="layer"><b><span class="lang-zh">原始字阵</span><span class="lang-en">The Grid</span></b><span class="lang-zh">29×29 字，一字不动。本展厅只保留压缩示意，不另发布独立读诗器。</span><span class="lang-en">29×29 characters, none moved. This gallery keeps a compressed exhibit view rather than a standalone reader.</span></div>
+      <div class="layer"><b><span class="lang-zh">读法路径</span><span class="lang-en">The Routes</span></b><span class="lang-zh">合法路径决定哪些字被取出，不能把任意横竖斜都当作读诗。</span><span class="lang-en">Legal routes decide which cells are read; arbitrary rows and diagonals are not treated as poems.</span></div>
       <div class="layer"><b><span class="lang-zh">译解</span><span class="lang-en">The Reading</span></b><span class="lang-zh">每条路径取出的字连成一行可读的诗。</span><span class="lang-en">The characters along each path join into one readable line.</span></div>
     </div>
 
     <div class="stage">
-      <span class="block-label"><span class="lang-zh">原始字阵 · 正本读诗器</span><span class="lang-en">Original Grid · Verified Reader</span></span>
-      <iframe class="xuanji-frame" src="./璇玑图.html?v=20260609" title="嵌入式《璇玑图》逐字动画读诗器"></iframe>
-      <p class="note"><span class="lang-zh">这是《璇玑图》唯一正本读诗器，原地嵌入，不另复制版本。苏蕙《璇玑图》（前秦），29×29 字阵。</span><span class="lang-en">This is the single canonical reader, embedded in place rather than copied. Su Hui's Xuanji Tu (Former Qin), a 29×29 grid.</span></p>
+      <span class="block-label"><span class="lang-zh">路径如何把字阵变成读法</span><span class="lang-en">How a Route Turns a Grid into Reading</span></span>
+      <div class="xuanji-preview">
+        <div class="xuanji-grid" aria-label="压缩示意字阵">
+          <span>仁</span><span>智</span><span>怀</span><span>德</span><span>苏</span><span>蕙</span><span class="path">诗</span><span>经</span><span>纬</span><span>锦</span><span>心</span><span>回</span><span>文</span>
+          <span>机</span><span>杼</span><span class="path">织</span><span>成</span><span>离</span><span>思</span><span>怨</span><span>别</span><span>秦</span><span>风</span><span>汉</span><span>月</span><span>长</span>
+          <span>寒</span><span>灯</span><span>未</span><span class="path">尽</span><span>字</span><span>行</span><span>回</span><span>环</span><span>千</span><span>折</span><span>不</span><span>可</span><span>穷</span>
+          <span>读</span><span>者</span><span>循</span><span>格</span><span class="path">取</span><span>声</span><span>不</span><span>任</span><span>横</span><span>斜</span><span>乱</span><span>成</span><span>章</span>
+          <span>一</span><span>阵</span><span>多</span><span>诗</span><span>皆</span><span class="path">因</span><span>路</span><span>转</span><span>非</span><span>由</span><span>眼</span><span>任</span><span>猜</span>
+          <span>红</span><span>点</span><span>只</span><span>示</span><span>一</span><span>条</span><span class="path">径</span><span>其</span><span>余</span><span>待</span><span>据</span><span>底</span><span>本</span>
+        </div>
+        <div class="xuanji-route">
+          <b><span class="lang-zh">展厅处理</span><span class="lang-en">Gallery Treatment</span></b>
+          <p><span class="lang-zh">《璇玑图》不再作为独立公开页发布。它在这里被收进“路径机器”：重点不是另开一个读诗工具，而是说明同一字阵如何被合法路径反复读取。</span><span class="lang-en">The Xuanji Tu is no longer published as a standalone public page. Here it is folded into the “path machine”: the point is not a separate reader, but how one grid becomes readable through sanctioned routes.</span></p>
+          <div class="line">织 · 尽 · 取 · 因 · 径</div>
+          <p><span class="lang-zh">左侧为压缩示意，不是苏蕙原阵复刻；正式原阵与完整读法留在内部工作台继续校验。</span><span class="lang-en">The grid at left is a compressed demonstration, not a reproduction of Su Hui's original grid; the full grid and route reader remain internal working material for verification.</span></p>
+        </div>
+      </div>
+      <p class="note"><span class="lang-zh">公开版只保留策展层：路径、轮廓、嵌图、高度四种阅读动作。独立《璇玑图》页面已从公开入口移除。</span><span class="lang-en">The public version keeps only the curatorial layer: path, silhouette, figure, and tower. The standalone Xuanji Tu page has been removed from the public collection.</span></p>
     </div>
 
     <details class="source">
       <summary><span class="lang-zh">来源</span><span class="lang-en">Source</span></summary>
-      <p><span class="lang-zh">苏蕙《璇玑图》，前秦。读法依《镜花缘》所列。嵌入读诗器为本展厅正本，逐字逐坐标可读。</span><span class="lang-en">Su Hui, Xuanji Tu, Former Qin. Reading routes follow those listed in Jinghua Yuan. The embedded reader is the gallery's canonical version, readable character by character.</span></p>
+      <p><span class="lang-zh">苏蕙《璇玑图》，前秦。公开展厅仅保留路径机器的策展说明；完整 29×29 底板、坐标和《镜花缘》读法不作为独立公开页发布。</span><span class="lang-en">Su Hui, Xuanji Tu, Former Qin. The public gallery keeps only the curatorial explanation of the path machine; the full 29×29 grid, coordinates, and Jinghua Yuan routes are not published as a standalone page.</span></p>
     </details>
   </section>
 
@@ -409,7 +434,7 @@
     </details>
   </section>
 
-  <p style="margin-top:26px"><a class="home" href="./index.html">← 篇若 · 做的东西</a></p>
+  <p style="margin-top:26px"><a class="home" href="./index.html">← 篇若 · 公开作品集</a></p>
 </main>
 
 <!-- 手稿放大 lightbox -->
@@ -463,7 +488,7 @@ nav.addEventListener('click', e=>{
 setExhibit(new URL(window.location.href).searchParams.get('ex') || 'ex1', false);
 
 /* ---------- 展品一 · 路径机器 ---------- */
-/* 《璇玑图》唯一正本：./璇玑图.html，通过 iframe 原地嵌入，不复制第二套版本。 */
+/* 《璇玑图》独立读诗器已从公开版移除；这里只保留策展层示意。 */
 
 /* ---------- 展品二 · 轮廓机器（Simmias《翼》12 行逐字） ---------- */
 /* 逐字抄自 Anthologia Graeca 15.24 / Paton edition（典藏交付 simmias-the-wings-AG15.24.md）。
